@@ -36,46 +36,48 @@ NumDirections = 6 # 6 cones to cover the all release direction for a sphere
 
 TVDPLot = False
 
-iExlFilename='Bv08_i5'
-
+# iExlFilename='Bv08_i5'
 #Topside
-Area = 'ProcessArea'
-cExlFilename='Bv08_c5'
-EqvsModule = {'020-01': 'S05', '020-02':'S05', \
-    '020-03':'S04', '020-04':'S04', \
-        '021-01':'S02','023-01':'P03','023-02':'P03', \
-            '023-03':'S03', '023-04':'S03', \
-                '024-01':'P04', '024-02':'P04','024-03':'P04', '025-01':'P04', '025-02':'P04', \
-                    '025-03':'S03','027-01':'P05', '027-02':'P05', '027-03':'P05', \
-                        '045-01':'P03','045-02':'P03','046-01':'P02','013-01':'S05'}
+# Area = 'ProcessArea'
+# cExlFilename='Bv08_c5'
+# EqvsModule = {'020-01': 'S05', '020-02':'S05', \
+#     '020-03':'S04', '020-04':'S04', \
+#         '021-01':'S02','023-01':'P03','023-02':'P03', \
+#             '023-03':'S03', '023-04':'S03', \
+#                 '024-01':'P04', '024-02':'P04','024-03':'P04', '025-01':'P04', '025-02':'P04', \
+#                     '025-03':'S03','027-01':'P05', '027-02':'P05', '027-03':'P05', \
+#                         '045-01':'P03','045-02':'P03','046-01':'P02','013-01':'S05'}
 
-SFXFiles = ['013-01-C1-G', '013-01-C2-G', '013-01-N1-G', '013-01-N2-G', \
-    '020-01-01-G', '020-01-02-L', '020-02-01-Li', '020-02-02-G', '020-02-03-Lo', '020-03-01-Li', '020-03-02-G', '020-03-03-Lo', '020-04-01-L', '020-04-02-G', '020-05-01-G', '020-05-02-L', \
-    '023-01-01-G-DA', '023-01-01-G-DB', '023-01-02-L', '023-02-01-G-DA', '023-02-01-G-DB', '023-02-02-L', '023-03-01-G-DA', '023-03-01-G-DB', '023-03-01-G-DC', '023-03-02-L','023-03-03-L', '023-04-G',\
-    '024-01-01-G','024-01-02-L', '024-02-G-DA', '024-02-G-DB', '024-02-G-DC', '024-03-01-G', '024-03-02-L',  \
-    '025-01-01-G', '025-01-02-L', '025-02-01-G', '025-02-02-L', '027-01-G-DA', '027-01-G-DB', '027-01-G-DC', '027-02-G', '027-03-G',  \
-    '043-03-G', '045-01-G', '045-02-01-G', '045-02-02-L', '045-03-G', '046-02-L', '046-03-L',\
-    '021-01-01-L','046-01-01-L','046-01-02-L','046-01-03-L','046-01-04-L','062-01-01-L','043-01-01-G','043-01-02-L','043-02-01-G','043-02-02-L']
-TVDprefix = '.\\tvd_rev.B\\tvd-xlsx & pngs\\'
-element_dump_filename = 'Bv08_c5_dump'
+# SFXFiles = ['013-01-C1-G', '013-01-C2-G', '013-01-N1-G', '013-01-N2-G', \
+#     '020-01-01-G', '020-01-02-L', '020-02-01-Li', '020-02-02-G', '020-02-03-Lo', '020-03-01-Li', '020-03-02-G', '020-03-03-Lo', '020-04-01-L', '020-04-02-G', '020-05-01-G', '020-05-02-L', \
+#     '023-01-01-G-DA', '023-01-01-G-DB', '023-01-02-L', '023-02-01-G-DA', '023-02-01-G-DB', '023-02-02-L', '023-03-01-G-DA', '023-03-01-G-DB', '023-03-01-G-DC', '023-03-02-L','023-03-03-L', '023-04-G',\
+#     '024-01-01-G','024-01-02-L', '024-02-G-DA', '024-02-G-DB', '024-02-G-DC', '024-03-01-G', '024-03-02-L',  \
+#     '025-01-01-G', '025-01-02-L', '025-02-01-G', '025-02-02-L', '027-01-G-DA', '027-01-G-DB', '027-01-G-DC', '027-02-G', '027-03-G',  \
+#     '043-03-G', '045-01-G', '045-02-01-G', '045-02-02-L', '045-03-G', '046-02-L', '046-03-L',\
+#     '021-01-01-L','046-01-01-L','046-01-02-L','046-01-03-L','046-01-04-L','062-01-01-L','043-01-01-G','043-01-02-L','043-02-01-G','043-02-02-L']
+# TVDprefix = '.\\tvd_rev.B\\tvd-xlsx & pngs\\'
+# element_dump_filename = 'Bv08_c5_dump'
 
 
 #Topside Parameters End
 
-#Offloaidng ara analysis
+#Offloaidng area analysis
 # 'Flammable dispersion' is not relevant??? All vaporized??
-# cExlFilename='Bv06_O_c'
-# SFXFiles = ['021-02-L']
-# element_dump_filename = 'Bv06_offloading_dump'
+Area = 'Offloading'
+cExlFilename='Bv06_O_c'
+SFXFiles = ['021-02-L']
+element_dump_filename = 'Bv06_offloading_dump'
 
 #Utlity analysis
+# Area = 'Utility'
 # cExlFilename='Bv06_u_c'
 # SFXFiles = ['045-04-G','062-01-02-L']
 # TVDprefix = '.\\tvd_rev.B\\tvd-xlsx & pngs\\'
-# # element_dump_filename = 'Bv06_utility_dump_2' #_2 with the updated S01 part count
+# element_dump_filename = 'Bv06_utility_dump_2' #_2 with the updated S01 part count
 # element_dump_filename = 'Bv06_utility_dump' #_2 with the updated S01 part count
 
 #Hull deck analysis
+# iExlFilename='Bv06_i'
 # Area = 'Hull'
 # cExlFilename='Bv06_h_c'
 # SFXFiles = ['131-01-L-fwdP','131-01-L-fwdS','131-01-L-aftP','131-01-L-aftS','131-02-L-fwdP','131-02-L-fwdS','131-02-L-aftP','131-02-L-aftS','057-01-02-L','057-01-01-G','046-04-L','021-01-02-L','013-06-L','013-05-L']
@@ -295,6 +297,7 @@ class EarlyPoolFire:
         self.D04 = d04 #Distance to 4kW/m2
         self.D12 = d12 #Distance to 12.4 kW/m2
         self.Ts = [0.,0.,0.,0.,0.]
+        self.PoolFireDurations = [0.,0.,0.]
         self.PoolDiameters = [0.,0.,0.,0.,0.]
     def __str__(self):
         a,b,c,d,e = self.PoolDiameters
@@ -425,11 +428,22 @@ while r < 81:
        numESDVs[pv] = pnedvs
     pnedvs = nedvs
     r += 1
+
 import pandas as pd
-pdIS = pd.DataFrame([IS_P, IS_T,IS_V,IS_Vadj],index=['P','T','Vol','VolAdj'])
+pdIS = pd.DataFrame([Modules, Deck,IS_P, IS_T,IS_V,IS_Vadj],index=['Modules','Deck','P','T','Vol','VolAdj'])
 pdIS = pdIS.transpose()
 pdIS = pdIS.replace(0,'NaN')
 pdIS = pdIS.fillna(method='ffill')
+pdISM = pdIS.set_index(['Modules','Deck'])
+#Pressure analysis
+# pdISM.mean(level=['Modules','Deck']).P.plot.bar() #Average pressure per Module-Deck
+# plt.title('Pressure')
+# plt.show()
+#Volume analysis
+pdISM.eval('Vtotal = Vol + VolAdj')
+# pdISM.mean(level=['Modules','Deck']).P.plot.bar() #Average pressure per Module-Deck
+# plt.show()
+
 
 r=5
 while shFreq.cell(r,2).value == "Full pressure leak":     
@@ -710,7 +724,7 @@ IgnProb['025-02-02-L']=[0.000522583069562832, 0.00101236355066008, 0.01001388521
 IgnProb['045-02-02-L']=[0.000508796740718446, 0.00101235169916876, 0.0100138620131291, 0.0114198897932327]
 IgnProb['046-02-L']=[0.000508730146956579, 0.00101235169916876, 0.0100138836975031, 0.0120016098996878]
 IgnProb['046-03-L']=[0.000508860004113257, 0.00101235169916876, 0.0100138836975031, 0.0118524777688686]
-IgnProb['021-01-01-L']=[0.000508858817833085, 0.00101259968232398, 0.0100138836975031, 0.011479454586573]
+IgnProb['021-01-01-L']=[0.000508858817833085, 0.00101259968232398, 0.0100138836975031, 0.011479454586573] #Condensate metering to be used for 'General'
 IgnProb['046-01-01-L']=[0.000520054733740898, 0.0010124262251176, 0.0100138836975031, 0.0115909676594336]
 IgnProb['046-01-02-L']=[0.00050866129882744, 0.00101234633180997, 0.0100138155060565, 0.0114190815800586]
 IgnProb['046-01-03-L']=[0.000508781590063117, 0.00101256191269099, 0.0100138836975031, 0.0115814461696202]
@@ -718,6 +732,7 @@ IgnProb['046-01-04-L']=[0.00050866129882744, 0.00101235169916876, 0.010013883697
 IgnProb['062-01-01-L']=[0.000516144282959011, 0.00101235169916876, 0.0100138620131291, 0.0114396472822243]
 IgnProb['043-01-02-L']=[0.000523907361472883, 0.00101252832811484, 0.0100138848346709, 0.0133282685238919]
 IgnProb['043-02-02-L']=[0.000520386507843883, 0.00101255608114051, 0.010013883697503, 0]
+IgnProb['General']=[0.000508858817833085, 0.00101259968232398, 0.0100138836975031, 0.011479454586573] #Condensate metering to be used for 'General'
 # IgnProb['General']=[0.000502,0.001677,0.017112,0.017916]
 
 
@@ -737,7 +752,7 @@ for e in lEvent:
     if IgnitionModel == "OLF":
         # Adjustment for liquid mass fraction
         # rr *= (1-min(e.Discharge.LiquidMassFraction,0.95)) #Considering the additional 5% vapour only for the full liquid leak
-        rr = rr * (1 - e.Discharge.LiquidMassFraction + 0.05) #Considering the additional 5% vapour for all two-phase release 
+        rr = rr * min(1 - e.Discharge.LiquidMassFraction + 0.05,1) #Considering the additional 5% vapour for all two-phase release 
         if p == []:
             p = IgnProb['General']
         if rr < 1:

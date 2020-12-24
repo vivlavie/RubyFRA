@@ -1,5 +1,9 @@
 #PyDimCube
-Version=5
+Version=6
+#PyDimCube6
+#Distributing the jet and pool fire frequenciencies
+#
+PropJetNotPool = 0.5
 #For a cube, read from each cube the duration that jet fire impinges on it
 #PyDimCube3
 #To consider failure cases for fire or gas detector
@@ -175,20 +179,20 @@ pdIS[id_p05].mean()
 
 
 import dill
-# Area = "ProcessArea"
-# element_dump_filename = 'Bv08_c5_dump'
-# icubeloc='SCE_CUBE_XYZ2_Process'
-# FractionPoolFire = 1
+Area = "ProcessArea"
+element_dump_filename = 'Bv08_c5_dump'
+icubeloc='SCE_CUBE_XYZ2_Process'
+FractionPoolFire = 1
 
 # Area = "HullDeck"
 # element_dump_filename = 'Bv06_hull_dump'
 # icubeloc='SCE_CUBE_XYZ2_HullDeck'
 # FractionPoolFire = 1
 
-Area = "Reel Station"
-element_dump_filename = 'Bv06_offloading_dump'
-icubeloc='SCE_CUBE_XYZ2_Offloading'
-FractionPoolFire = 1
+# Area = "Reel Station"
+# element_dump_filename = 'Bv06_offloading_dump'
+# icubeloc='SCE_CUBE_XYZ2_Offloading'
+# FractionPoolFire = 1
 
 # element_dump_filename = 'Bv06_utility_dump'
 # icubeloc='SCE_CUBE_XYZ2_Utility'
@@ -338,62 +342,16 @@ for i in range(0,ncube):
             print('something wrong in P_FD_Fail')
             exit()
 
-        #Jet Fire Analysis
-        # if (e.JetFire != None): #to consider all release
-        # if (e.JetFire != None) and ((CubeDeck[id] == e.Deck) or (e.Module == CubeModule)): #To consider release at the same deck or in the same module                
-        # if (e.JetFire != None) and ((e.Module == CubeModule) or (e.Module in AdjModules[CubeModule])) : #To consider release sources at any decks in the adjacent modules        
-        if (e.JetFire != None) and ((e.Module == CubeModule) or ((e.Module in AdjModules[CubeModule]) and (CubeDeck[id] == e.Deck))) : #To consider release sources at the same deck in the adjacent modules        
-            
-            #Array of jet length
-            jl_e = e.jfscale*2.8893*np.power(55.5*e.TVD[:,2],0.3728) #the 3rd column of the matrix, Lowesmith formulat
-            t_e = interp1d(jl_e,e.TVD[:,0],kind='linear') #Read the time when 'jl' is equal to the distance 'rr'            
-            
-            # The following condition is to consider effects of fire wall
-            # If the firewall is considered and the source and targets are at different areas, we skip considering the jet fire effect.
-            # In other words, if the fire is not considered (firewall == false) or (if they are in the same area), we will consider the jet fire
-            # if (FireWallBtn3and4 == False) or (((xx > FirewallX) and (e.X > FirewallX)) or ((xx < FirewallX) and (e.X < FirewallX)))
-            # if (FireWallBtn3and4 == False) or (((xx > FirewallX) and (e.X > FirewallX)) or ((xx < FirewallX) and (e.X < FirewallX))):            
-
-            #With no ESD
-            if ('EXBX' in e.Key) or ('EXBN' in e.Key):
-                #With EXBX or EXBN, there are two cases of ESDV fail. One is when fire detection fails and the other is when FD is successfule but ESDV itself fails
-                #Fire detection successful
-                #Probability of failure of ESD and BDV is already reflected in e.Frequency (Leak frequency)
-                ff = e.JetFire.Frequency*(1-P_FD_Fail)
-                if max(jl_e) < rr:                                     
-                    ImpingeDurationArray.append([0.,0.,e.Key+"FO_Jet"])                    
-                elif min(jl_e) > rr:                
-                    ImpingeDurationArray.append([e.TVD[-1,0],ff,e.Key+"FO_Jet"])                             
-                else:                
-                    ImpingeDurationArray.append([float(t_e(rr)),ff,e.Key+"FO_Jet"])                    
-
-                #Fire detection failure, any release irrespective of success of ESDV and BDV will result in EXBX release case      
-                ff = e.JetFire.Frequency/e.PESD/e.PBDV*P_FD_Fail
-                if max(jl_e) < rr:                                     
-                    ImpingeDurationArray.append([0.,0.,e.Key+"FX_Jet"])                    
-                elif min(jl_e) > rr:                
-                    ImpingeDurationArray.append([e.TVD[-1,0],ff,e.Key+"FX_Jet"])                             
-                else:                
-                    ImpingeDurationArray.append([float(t_e(rr)),ff,e.Key+"FX_Jet"])                    
-            else:  
-                #Fire detection succedded
-                #Probability of success of ESD is already reflected in e.Frequency
-                ff = e.JetFire.Frequency*(1-P_FD_Fail)
-                if max(jl_e) < rr:                                     
-                    ImpingeDurationArray.append([0.,0.,e.Key+"FO_Jet"])                    
-                elif min(jl_e) > rr:                
-                    ImpingeDurationArray.append([e.TVD[-1,0],ff,e.Key+"FO_Jet"])                             
-                else:                
-                    ImpingeDurationArray.append([float(t_e(rr)),ff,e.Key+"FO_Jet"])                    
+                        
             
         #Pool fire
         Cond1 = ((CubeModule == e.Module) and (CubeDeck[id] == e.Deck) and ((e.EarlyPoolFire != None) or (e.LatePoolFire != None)) )
         Cond2 = (e.Module[:2]=="HD") and (e.Deck == "Hull" ) and (((id[-1] == 'A') and (e.X < X_hd_coaming)) or ((id[-1] == 'F') and (e.X >= X_hd_coaming )))
-        
-        if  Cond1 or Cond2 :
-            # print(e.Key, Cond1, Cond2)        
+        t_pool_early = t_pool_late = 0.
+        # print(e.Key, Cond1, Cond2)        
         # if ((CubeModule == e.Module) and (CubeDeck[id] == e.Deck) and ((e.EarlyPoolFire != None) or (e.LatePoolFire != None)) ) :        
         # if ((CubeDeck[id] == e.Deck) and ((e.EarlyPoolFire != None) or (e.LatePoolFire != None)) ) or (((id[-1] == 'A') and (e.X < X_hd_coaming)) or ((id[-1] == 'F') and (e.X >= X_hd_coaming ))) :        
+        if  Cond1 or Cond2 :
             # print(e.Key, e.Module,"I am in pool fire")
 
             #Density
@@ -411,8 +369,6 @@ for i in range(0,ncube):
                 CondensateDensity = IS_rho[is_name]
             
             #Time for the release rate is larger than drain-rate
-# DrainRateModuleArea = {'S05':646.5,'S04':584.0,'S03':483.4,'S02':474.2,'P05':585,'P04':584,'P03':475,'P02':403,'KOD':403}
-# EquipCoamingArea = {'S05':3,'S04':33,'S03':10,'S02':0,'P05':15,'P04':8,'P03':6,'P02':40}#the smallest drain  is used
             if e.Deck == 'B':
                 # drain_rate = (EquipCoamingArea[e.Module]*0.27)/3600*CondensateDensity                #0.27 m/hr (270mm/hr) "Open drain sizing Section 7 1)" for overboarding???
                 # drain_rate = (EquipCoamingArea[e.Module]*DrainRateModuleVol[e.Module]/DrainRateModuleArea[e.Module])/3600*CondensateDensity                #0.27 m/hr (270mm/hr) "Open drain sizing Section 7 1)" for overboarding???
@@ -478,49 +434,51 @@ for i in range(0,ncube):
                 dd = min(e.EarlyPoolFire.Diameter,drain_area_dia)
                 t_pool_burn = Ms_to_burn / (3.14/4*dd**2 * burn_rate)
                 
-                t_pool = max(t_pool_release,t_pool_burn)
+                t_pool_early = max(t_pool_release,t_pool_burn)
                 
-                e.EarlyPoolFire.PoolFireDurations = [t_pool_release,t_pool_burn,t_pool]
+                e.EarlyPoolFire.PoolFireDurations = [t_pool_release,t_pool_burn,t_pool_early]
+                
 
-                # if (rr < dd*0.5) & (zz-35 < DtoH(dd)) & (t_pool > 0): # cube is within the pool, cube center is higher than the pool height, duation > 0
-                # if (rr2 < dd*0.5) & (t_pool > 0): # cube is within the pool, cube center is higher than the pool height, duation > 0
-                if (t_pool > 0): # cube is within the pool, cube center is higher than the pool height, duation > 0
+                # if (rr < dd*0.5) & (zz-35 < DtoH(dd)) & (t_pool_early > 0): # cube is within the pool, cube center is higher than the pool height, duation > 0
+                # if (rr2 < dd*0.5) & (t_pool_early > 0): # cube is within the pool, cube center is higher than the pool height, duation > 0
+                if (t_pool_early > 0): # cube is within the pool, cube center is higher than the pool height, duation > 0
                     # if (rr2 < 1*dd*0.5): # cube is within the pool, cube center is higher than the pool height, duation > 0
                         # print("Exposre to Early pool fire",e.Key)
                         # di = PFD*(dd-2*rr)/dd   
-                        di = t_pool                     
+                        di = t_pool_early                     
                         # print('Release',t_pool_release,'Burn',t_pool_burn,'Early Pool fire duration',di)
 
                         if ('EXBX' in e.Key) or ('EXBN' in e.Key):
-                            #Fire detection successful but ESD fail, FO_EX
-                            ff = e.EarlyPoolFire.Frequency*(1-P_FD_Fail)
+                            #Fire detection successful but ESD fail, FO_EX                            
+                            ff = e.EarlyPoolFire.Frequency*(1-P_FD_Fail)*(1-PropJetNotPool)
                             ImpingeDurationArray.append([di,ff,e.Key+"FO_EarlyPool"])                        
                             #Fire detection failure and ESD was not activated, FX_EX 
                             ff = 0.
                             pv,hole,weather = e.Key.split("\\")
                             for ee in lEvent:
                                 if ((pv in ee.Key) and (hole[:2] == ee.Hole[:2]) and (weather == ee.Weather)):
-                                    ff += ee.EarlyPoolFire.Frequency*P_FD_Fail
+                                    ff += ee.EarlyPoolFire.Frequency*P_FD_Fail*(1-PropJetNotPool)
                             ImpingeDurationArray.append([di,FractionPoolFire*ff,e.Key+"FX_EarlyPool"])                                                    
                         else:                          
-                            ImpingeDurationArray.append([di,FractionPoolFire*e.EarlyPoolFire.Frequency*(1-P_FD_Fail),e.Key+"FO_EarlyPool"])
+                            ImpingeDurationArray.append([di,FractionPoolFire*e.EarlyPoolFire.Frequency*(1-P_FD_Fail)*(1-PropJetNotPool),e.Key+"FO_EarlyPool"])
                     #     print(id, e.Key, e.Module,di,"Early pool fire added")
                     # else:
-                    #     print('Early pool too small to expose Cube?',id, e.Key, e.Module, e.Deck, rr2,dd*0.5, t_pool)
+                    #     print('Early pool too small to expose Cube?',id, e.Key, e.Module, e.Deck, rr2,dd*0.5, t_pool_early)
+            
             if (e.LatePoolFire != None)  and (e.LatePoolFire.Frequency != 0.):
                 #Read pool fire duration, ho                    
                 dd = min(e.LatePoolFire.Diameter,drain_area_dia)
                 t_pool_burn = Ms_to_burn / (3.14*dd**2/4 * burn_rate)
-                t_pool = max(t_pool_release,t_pool_burn)  
-                e.LatePoolFire.Ts = [t_pool_release,t_pool_burn,t_pool]
+                t_pool_late = max(t_pool_release,t_pool_burn)  
+                e.LatePoolFire.Ts = [t_pool_release,t_pool_burn,t_pool_late]
 
-                # if (rr < dd*0.5) & (zz - 35 < DtoH(dd)) & (t_pool > 0):
-                # if (rr2 < dd*0.5) & (t_pool > 0):
-                if (t_pool > 0):
+                # if (rr < dd*0.5) & (zz - 35 < DtoH(dd)) & (t_pool_late > 0):
+                # if (rr2 < dd*0.5) & (t_pool_late > 0):
+                if (t_pool_late > 0):
                     # if (rr2 < 1*dd*0.5):
                         # print("Exposre to Late pool fire",e.Key)
                         # di = PFD*(dd-rr)/dd                        
-                        di = t_pool                     
+                        di = t_pool_late                     
                         # print('Release',t_pool_release,'Burn',t_pool_burn,'Late Pool fire duration',di)
                         if ('EXBX' in e.Key) or ('EXBN' in e.Key):
                             #Fire detection successful
@@ -537,8 +495,62 @@ for i in range(0,ncube):
                             ImpingeDurationArray.append([di,FractionPoolFire*e.LatePoolFire.Frequency*(1-P_GD_Fail),e.Key+"FO_LatePool"])
                     #     print(id, e.Key, e.Module,di,"Late pool fire added")
                     # else:
-                    #     print('Late pool too small to expose Cube?',id, e.Key, e.Module, e.Deck, rr2,dd*0.5, t_pool)                        
-      
+                    #     print('Late pool too small to expose Cube?',id, e.Key, e.Module, e.Deck, rr2,dd*0.5, t_pool_late)                        
+
+        #Jet Fire Analysis
+        # if (e.JetFire != None): #to consider all release
+        # if (e.JetFire != None) and ((CubeDeck[id] == e.Deck) or (e.Module == CubeModule)): #To consider release at the same deck or in the same module                
+        # if (e.JetFire != None) and ((e.Module == CubeModule) or (e.Module in AdjModules[CubeModule])) : #To consider release sources at any decks in the adjacent modules        
+        if (e.JetFire != None) and ((e.Module == CubeModule) or ((e.Module in AdjModules[CubeModule]) and (CubeDeck[id] == e.Deck))) : #To consider release sources at the same deck in the adjacent modules        
+            
+            #Array of jet length
+            jl_e = e.jfscale*2.8893*np.power(55.5*e.TVD[:,2],0.3728) #the 3rd column of the matrix, Lowesmith formulat
+            t_e = interp1d(jl_e,e.TVD[:,0],kind='linear') #Read the time when 'jl' is equal to the distance 'rr'            
+            
+            # The following condition is to consider effects of fire wall
+            # If the firewall is considered and the source and targets are at different areas, we skip considering the jet fire effect.
+            # In other words, if the fire is not considered (firewall == false) or (if they are in the same area), we will consider the jet fire
+            # if (FireWallBtn3and4 == False) or (((xx > FirewallX) and (e.X > FirewallX)) or ((xx < FirewallX) and (e.X < FirewallX)))
+            # if (FireWallBtn3and4 == False) or (((xx > FirewallX) and (e.X > FirewallX)) or ((xx < FirewallX) and (e.X < FirewallX))):            
+
+            if t_pool_early > 0.:
+                JetFireFrequency = PropJetNotPool*e.JetFire.Frequency
+            else:
+                JetFireFrequency = e.JetFire.Frequency
+
+            #With no ESD
+            if ('EXBX' in e.Key) or ('EXBN' in e.Key):
+                #With EXBX or EXBN, there are two cases of ESDV fail. One is when fire detection fails and the other is when FD is successfule but ESDV itself fails
+                #Fire detection successful
+                #Probability of failure of ESD and BDV is already reflected in e.Frequency (Leak frequency)
+                ff = JetFireFrequency*(1-P_FD_Fail)
+                if max(jl_e) < rr:                                     
+                    ImpingeDurationArray.append([0.,0.,e.Key+"FO_Jet"])                    
+                elif min(jl_e) > rr:                
+                    ImpingeDurationArray.append([e.TVD[-1,0],ff,e.Key+"FO_Jet"])                             
+                else:                
+                    ImpingeDurationArray.append([float(t_e(rr)),ff,e.Key+"FO_Jet"])                    
+
+                #Fire detection failure, any release irrespective of success of ESDV and BDV will result in EXBX release case      
+                ff = JetFireFrequency/e.PESD/e.PBDV*P_FD_Fail
+                if max(jl_e) < rr:                                     
+                    ImpingeDurationArray.append([0.,0.,e.Key+"FX_Jet"])                    
+                elif min(jl_e) > rr:                
+                    ImpingeDurationArray.append([e.TVD[-1,0],ff,e.Key+"FX_Jet"])                             
+                else:                
+                    ImpingeDurationArray.append([float(t_e(rr)),ff,e.Key+"FX_Jet"])                    
+            else:  
+                #Fire detection succedded
+                #Probability of success of ESD is already reflected in e.Frequency
+                ff = JetFireFrequency*(1-P_FD_Fail)
+                if max(jl_e) < rr:                                     
+                    ImpingeDurationArray.append([0.,0.,e.Key+"FO_Jet"])                    
+                elif min(jl_e) > rr:                
+                    ImpingeDurationArray.append([e.TVD[-1,0],ff,e.Key+"FO_Jet"])                             
+                else:                
+                    ImpingeDurationArray.append([float(t_e(rr)),ff,e.Key+"FO_Jet"])    
+
+
     #To pin-point a scenario that give the dimensioning scenario
     IDAsorted = sorted(ImpingeDurationArray, key = lambda fl: fl[0]) #with the longest duration at the bottom
     
@@ -799,3 +811,10 @@ is_S02 = pdEPF.Module == 'S02'
 is_FullCoaming = pdEPF.Diameter > 15
 pdEPF[is_S02 & is_FullCoaming]
 
+
+
+s6 = pd.read_csv('S05_A_AS_6.txt',sep="\s+",header = None,names=['Key','Module,','F','T','Fcum'])
+s5 = pd.read_csv('S05_A_AS_5.txt',sep="\s+",header = None,names=['Key','Module,','F','T','Fcum'])
+plt.semilogy(s5['T'],s5.Fcum,s6['T'],s6.Fcum)
+plt.legend(['Pool or Jet','Pool/Jet Distributed'])
+plt.show()
